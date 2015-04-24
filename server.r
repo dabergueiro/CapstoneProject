@@ -26,27 +26,27 @@ BuildMat <- function(gram)
   n <<- gram
   if (gram == 4)
   {
-    twitter <- readLines("Data/en_US.twitter.txt")
-    blogs <- readLines("Data/en_US.blogs.txt")
-    news <- readLines("Data/en_US.news.txt")
+    twitter <- readLines("Data/en_US.twitter.txt", n=20000)
+    blogs <- readLines("Data/en_US.blogs.txt", n=20000)
+    news <- readLines("Data/en_US.news.txt", n=20000)
     Predic <<- paste(ParsedPhrase[(length(ParsedPhrase)-2)], ParsedPhrase[(length(ParsedPhrase)-1)], ParsedPhrase[length(ParsedPhrase)], sep = " ")
   }
   else
   {
     if (gram ==3)
     {
-      twitter <- readLines("Data/en_US.twitter.txt", n=2500)
-      blogs <- readLines("Data/en_US.blogs.txt", n=2500)
-      news <- readLines("Data/en_US.news.txt", n=2500)
+      twitter <- readLines("Data/en_US.twitter.txt", n=10000)
+      blogs <- readLines("Data/en_US.blogs.txt", n=10000)
+      news <- readLines("Data/en_US.news.txt", n=10000)
       Predic <<- paste(ParsedPhrase[(length(ParsedPhrase)-1)], ParsedPhrase[length(ParsedPhrase)], sep = " ")
     }
     else
     {
       if (gram == 2)
       {
-        twitter <- readLines("Data/en_US.twitter.txt", n=100)
-        blogs <- readLines("Data/en_US.blogs.txt", n=100)
-        news <- readLines("Data/en_US.news.txt", n=100)
+        twitter <- readLines("Data/en_US.twitter.txt", n=300)
+        blogs <- readLines("Data/en_US.blogs.txt", n=300)
+        news <- readLines("Data/en_US.news.txt", n=300)
         Predic <<- paste(ParsedPhrase[length(ParsedPhrase)], sep = " ")
       }
     }
@@ -110,7 +110,14 @@ BuildDF <- function(SearchPhrase)
   {
     for (i in 1:length(df[,1]))
     {
-      t[i] <- as.vector(strsplit(as.character(df[,1]), " "))[[i]][n] #need to adjust the last parameter to ngram+1
+      if (i<1000)
+      {
+        t[i] <- as.vector(strsplit(as.character(df[,1]), " "))[[i]][n] #need to adjust the last parameter to ngram+1
+      }
+      else
+      {
+        break
+      }
     }
     
     freq.df <- as.data.frame(cbind(t, as.numeric(as.character(df[,2]))))
@@ -121,7 +128,7 @@ BuildDF <- function(SearchPhrase)
   }
   else
   {
-    data.frame("Result"=rep("No results found", 5))
+    data.frame("Result"="No results found", "Probability"=0)
   }
   
 }
@@ -134,25 +141,12 @@ shinyServer(
         isolate(DF <<- BuildDF(input$pred))
         as.character(DF[1,1])
     })
-    output$pred2 <- renderText({
-        input$predict
-        isolate(DF <<- BuildDF(input$pred))
-        as.character(DF[2,1])
+    output$predPlot <- renderPlot({
+      input$predict
+      #isolate(DF <<- BuildDF(input$pred))
+      #barplot(DF[,2], names.arg=DF[,1], ylab="Weight", xlab="Words", main="Top 5 word prediction")
+      isolate(barplot(DF[,2], names.arg=DF[,1], ylab="Weight", xlab="Words", main="Top 5 word prediction"))
     })
-    output$pred3 <- renderText({
-        input$predict
-        isolate(DF <<- BuildDF(input$pred))
-        as.character(DF[3,1])
-    })
-    output$pred4 <- renderText({
-        input$predict
-        isolate(DF <<- BuildDF(input$pred))
-        as.character(DF[4,1])
-    })
-    output$pred5 <- renderText({
-        input$predict
-        isolate(DF <<- BuildDF(input$pred))
-        as.character(DF[5,1])
-    })
+    
   }
 )

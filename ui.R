@@ -16,15 +16,8 @@ shinyUI(
       p("To use this app, the only thing needed is to enter a text string into the text box in the left panel, and click the Predict button to use the developed algorithm and receive the 5 best options for the next word based on the analyzed text."),
       h3("Predicted next word:"),
       verbatimTextOutput("pred1"),
-      h3("Other words that might be suitable:"),
-      #h4("Option 2:"),
-      verbatimTextOutput("pred2"),
-      #h4("Option 3:"),
-      verbatimTextOutput("pred3"),
-      #h4("Option 4:"),
-      verbatimTextOutput("pred4"),
-      #h4("Option 5:"),
-      verbatimTextOutput("pred5")#,
+      #h3("Other candidates:"),
+      plotOutput('predPlot')
     )
   )
 )
